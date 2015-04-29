@@ -14,7 +14,7 @@ public class stockDetails extends HttpServlet {
 		resp.setContentType("text/html");
 		
 		Date date1 = new Date();
-		date1.setYear(2014-1900);
+		date1.setYear(114);
 		date1.setMonth(11);
 		date1.setDate(15);
 		
@@ -28,24 +28,9 @@ public class stockDetails extends HttpServlet {
 		date3.setMonth(11);
 		date3.setDate(15);
 		
-		Stock stock1 = new Stock();
-		stock1.setSymbol("PIH"); 
-		stock1.setAsk((float) 13.1);
-		stock1.setBid((float) 12.4);
-		stock1.setDate(date1);
-		
-		Stock stock2 = new Stock();
-		stock2.setSymbol("AAL"); 
-		stock2.setAsk((float) 5.78);
-		stock2.setBid((float) 5.5);
-		stock2.setDate(date2);
-		
-		Stock stock3 = new Stock();
-		stock3.setSymbol("CAAS"); 
-		stock3.setAsk((float) 32.2);
-		stock3.setBid((float) 31.5);
-		stock3.setDate(date3);
-		
+		Stock stock1 = new Stock("PIH", 13.1f, 12.4f, date1);
+		Stock stock2 = new Stock("AAL", 5.78f, 5.5f, date2);
+		Stock stock3 = new Stock("CAAS", 32.2f, 31.5f, date3);
 		
 		resp.getWriter().println(stock1.getHtmlDescription());
 		resp.getWriter().println("<br></br>");

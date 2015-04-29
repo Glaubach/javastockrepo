@@ -3,11 +3,25 @@ package com.myorg.javacourse;
 import java.util.Date;
 
 public class Stock {
+	private static final int BUY = 0;
+	private static final int SELL = 1;
+	private static final int REMOVE = 2;
+	private static final int HOLD = 3;
+	
 	private String symbol;
 	private Float ask;
 	private Float bid;
 	private Date date;
+	private int recommendation;
+	private int stockQuantity;
 	
+	
+	public Stock(String string, float f, float g, Date date) {
+		this.symbol = string;
+		this.ask = f;
+		this.bid = g;
+		this.date = date;
+	}
 	public String getSymbol() {
 		return symbol;
 	}
