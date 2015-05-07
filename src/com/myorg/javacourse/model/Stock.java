@@ -1,7 +1,14 @@
-package com.myorg.javacourse;
-
+package com.myorg.javacourse.model;
 import java.util.Date;
-
+/**
+ * This class hold all stock parameters and prints the stock 
+ * @param symbol           stock name
+ * @param ask              stock buy price
+ * @param bid              stock sell price
+ * @param date             date of buy/sell
+ * @param recommendation   according to static final constant parameters
+ * @param stockQuantity    ammount of stock shares
+ */
 public class Stock {
 	private static final int BUY = 0;
 	private static final int SELL = 1;
@@ -15,13 +22,22 @@ public class Stock {
 	private int recommendation;
 	private int stockQuantity;
 	
-	
+	/**
+	 *constructor for Stock class 
+	 */
 	public Stock(String string, float f, float g, Date date) {
 		this.symbol = string;
 		this.ask = f;
 		this.bid = g;
 		this.date = date;
 	}
+	/**
+	 * copy constructor for stock class 
+	 */
+	public Stock(Stock stock) {
+		this(new String (stock.getSymbol()), stock.getAsk(), stock.getBid(), (Date)stock.getDate().clone());
+	}
+	
 	public String getSymbol() {
 		return symbol;
 	}
@@ -46,7 +62,10 @@ public class Stock {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	
+	/**
+	 * Method that returns stock's details
+	 * @return ret  string of stock details
+	 */
 	public String getHtmlDescription() {
 		String ret = "<b> Stock Symbol: </b>"+ getSymbol() + ",<b> Ask: </b>" + getAsk()+ ",<b> Bid: </b>" + getBid()+ ",<b> Date: </b>" + getDate().getMonth() + "/" + getDate().getDate() + "/" + (1900+ getDate().getYear())  ;
 		return ret;
