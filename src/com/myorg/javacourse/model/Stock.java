@@ -1,5 +1,7 @@
 package com.myorg.javacourse.model;
 import java.util.Date;
+
+import com.myorg.javacourse.model.Portfolio.ALGO_RECOMMENDATION;
 /**
  * This class hold all stock parameters and prints the stock 
  * @param symbol           stock name
@@ -10,16 +12,12 @@ import java.util.Date;
  * @param stockQuantity    ammount of stock shares
  */
 public class Stock {
-	private static final int BUY = 0;
-	private static final int SELL = 1;
-	private static final int REMOVE = 2;
-	private static final int HOLD = 3;
 	
 	private String symbol;
 	private Float ask;
 	private Float bid;
 	private Date date;
-	private int recommendation;
+	private ALGO_RECOMMENDATION recommendation;
 	private int stockQuantity;
 	
 	/**
@@ -69,6 +67,18 @@ public class Stock {
 	public String getHtmlDescription() {
 		String ret = "<b> Stock Symbol: </b>"+ getSymbol() + ",<b> Ask: </b>" + getAsk()+ ",<b> Bid: </b>" + getBid()+ ",<b> Date: </b>" + getDate().getMonth() + "/" + getDate().getDate() + "/" + (1900+ getDate().getYear())  ;
 		return ret;
+	}
+	public ALGO_RECOMMENDATION getRecommendation() {
+		return recommendation;
+	}
+	public void setRecommendation(ALGO_RECOMMENDATION recommendation) {
+		this.recommendation = recommendation;
+	}
+	public int getStockQuantity() {
+		return stockQuantity;
+	}
+	public void setStockQuantity(int stockQuantity) {
+		this.stockQuantity = stockQuantity;
 	}
 
 }
