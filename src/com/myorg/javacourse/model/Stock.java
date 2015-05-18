@@ -64,6 +64,7 @@ public class Stock {
 	 * Method that returns stock's details
 	 * @return ret  string of stock details
 	 */
+	@SuppressWarnings("deprecation")
 	public String getHtmlDescription() {
 		String ret = "<b> Stock Symbol: </b>"+ getSymbol() + ",<b> Ask: </b>" + getAsk()+ ",<b> Bid: </b>" + getBid()+ ",<b> Date: </b>" + getDate().getMonth() + "/" + getDate().getDate() + "/" + (1900+ getDate().getYear())  ;
 		return ret;

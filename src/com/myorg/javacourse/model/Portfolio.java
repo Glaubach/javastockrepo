@@ -244,5 +244,4 @@ public class Portfolio {
 	public void setStocks(Stock[] stocks) {
 		this.stocks = stocks;
 	}
-
 }
