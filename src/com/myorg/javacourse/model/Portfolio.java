@@ -247,10 +247,10 @@ public class Portfolio implements PortfolioInterface {
 	public static int getMaxSize() {
 		return MAX_PORTFOLIO_SIZE;
 	}
+	
 	public StockInterface findStock(String symbol) {
 		int index = findStockPlace(symbol);
 		Stock stock = (Stock) this.stocks[index];
 		return stock;
 	}
-	
 }

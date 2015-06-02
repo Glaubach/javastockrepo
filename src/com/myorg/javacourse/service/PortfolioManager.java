@@ -27,7 +27,7 @@ import org.algo.service.ServiceManager;
  * A class to manage all portfolios and their data
  */
 public class PortfolioManager implements PortfolioManagerInterface{
-//	public enum ALGO_RECOMMENDATION {BUY, SELL, REMOVE, HOLD }
+	public enum OPERATION {BUY, SELL, REMOVE, HOLD }
 	
 	private DatastoreService datastoreService = ServiceManager.datastoreService();
 
@@ -115,20 +115,20 @@ public class PortfolioManager implements PortfolioManagerInterface{
 							total += value;
 						}
 						map.put(date, value);
-						}
+					}
 				}
-		}
-		PortfolioTotalStatus[] ret = new PortfolioTotalStatus[map.size()];
-		int index = 0;
-		//create dto objects
-		for (Date date : map.keySet()) {
-			ret[index] = new PortfolioTotalStatus(date, map.get(date));
-			index++;
-		}
-		//sort by date ascending.
-		Arrays.sort(ret);
+			}
+			PortfolioTotalStatus[] ret = new PortfolioTotalStatus[map.size()];
+			int index = 0;
+			//create dto objects
+			for (Date date : map.keySet()) {
+				ret[index] = new PortfolioTotalStatus(date, map.get(date));
+				index++;
+			}
+			//sort by date ascending.
+			Arrays.sort(ret);
 			return ret;
-		}
+	}
 	
 	/**
 	* Add stock to portfolio 
