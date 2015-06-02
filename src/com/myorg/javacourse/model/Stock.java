@@ -1,5 +1,9 @@
 package com.myorg.javacourse.model;
+//import java.text.DateFormat;
+//import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.algo.model.StockInterface;
 
 import com.myorg.javacourse.model.Portfolio.ALGO_RECOMMENDATION;
 /**
@@ -11,7 +15,7 @@ import com.myorg.javacourse.model.Portfolio.ALGO_RECOMMENDATION;
  * @param recommendation   according to static final constant parameters
  * @param stockQuantity    ammount of stock shares
  */
-public class Stock {
+public class Stock implements StockInterface{
 	
 	private String symbol;
 	private Float ask;
@@ -20,6 +24,9 @@ public class Stock {
 	private ALGO_RECOMMENDATION recommendation;
 	private int stockQuantity;
 	
+	//private transient DateFormat df = new SimpleDateFormat();
+	
+	public Stock(){}
 	/**
 	 *constructor for Stock class 
 	 */
@@ -33,7 +40,10 @@ public class Stock {
 	 * copy constructor for stock class 
 	 */
 	public Stock(Stock stock) {
-		this(new String (stock.getSymbol()), stock.getAsk(), stock.getBid(), (Date)stock.getDate().clone());
+		this.symbol = stock.symbol;
+		this.ask = stock.ask;
+		this.bid = stock.bid;
+		this.date = new Date(stock.date.getTime());
 	}
 	
 	public String getSymbol() {
@@ -42,13 +52,13 @@ public class Stock {
 	public void setSymbol(String symbol) {
 		this.symbol = symbol;
 	}
-	public Float getAsk() {
+	public float getAsk() {
 		return ask;
 	}
 	public void setAsk(Float ask) {
 		this.ask = ask;
 	}
-	public Float getBid() {
+	public float getBid() {
 		return bid;
 	}
 	public void setBid(Float bid) {
@@ -66,7 +76,7 @@ public class Stock {
 	 */
 	@SuppressWarnings("deprecation")
 	public String getHtmlDescription() {
-		String ret = "<b> Stock Symbol: </b>"+ getSymbol() + ",<b> Ask: </b>" + getAsk()+ ",<b> Bid: </b>" + getBid()+ ",<b> Date: </b>" + getDate().getMonth() + "/" + getDate().getDate() + "/" + (1900+ getDate().getYear())  ;
+		String ret = "<b> Stock Symbol: </b>"+ getSymbol() + ",<b> Ask: </b>" + getAsk()+ ",<b> Bid: </b>" + getBid()+ ",<b> Date: </b>" + getDate().getMonth() + "/" + getDate().getDate() + "/" + (1900+ getDate().getYear() +"  " +getDate().getTime())  ;
 		return ret;
 	}
 	public ALGO_RECOMMENDATION getRecommendation() {
@@ -81,5 +91,4 @@ public class Stock {
 	public void setStockQuantity(int stockQuantity) {
 		this.stockQuantity = stockQuantity;
 	}
-
 }
