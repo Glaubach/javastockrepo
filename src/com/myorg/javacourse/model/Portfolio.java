@@ -72,14 +72,13 @@ public class Portfolio implements PortfolioInterface {
 		if(stock != null && portfolioSize < MAX_PORTFOLIO_SIZE) {
 			if ((findStockPlace(stock.getSymbol())) == -2){
 				this.stocks[portfolioSize] = stock;
-				((Stock) this.stocks[portfolioSize]).setStockQuantity(0);
 				portfolioSize++;
 				if(portfolioSize == MAX_PORTFOLIO_SIZE)
-					System.out.println("Can’t add new stock, portfolio can have only " +MAX_PORTFOLIO_SIZE+ " stocks");
+					System.out.println("Can’t add new stocks, portfolio can have only " +MAX_PORTFOLIO_SIZE+ " stocks");
 			}	
 		}
 		else 
-			System.out.println("The Portfolio is full, or the stock is null");
+			System.out.println("The Portfolio is full, or the stock is NULL");
 	}
 	
 	/**
@@ -88,7 +87,7 @@ public class Portfolio implements PortfolioInterface {
 	public int findStockPlace(String symbol){
 		int i;
 		for(i = 0; i < portfolioSize ;i++){
-			if( this.stocks[i].getSymbol() == symbol)
+			if( this.stocks[i].getSymbol().equals(symbol))
 				return i;
 		}	
 		return -2;
@@ -249,8 +248,12 @@ public class Portfolio implements PortfolioInterface {
 	}
 	
 	public StockInterface findStock(String symbol) {
-		int index = findStockPlace(symbol);
-		Stock stock = (Stock) this.stocks[index];
-		return stock;
+		for(int i = 0; i < portfolioSize ;i++){
+			if( this.stocks[i].getSymbol().equals(symbol)){
+				StockInterface stocks = this.stocks[i];
+				return stocks;
+			}	
+		}
+		return null;
 	}
 }

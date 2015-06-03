@@ -198,7 +198,7 @@ public class PortfolioManager implements PortfolioManagerInterface{
 	}
 
 	private Stock fromDto(StockDto stockDto) {
-		Stock newStock = new Stock(null);
+		Stock newStock = new Stock();
 
 		newStock.setSymbol(stockDto.getSymbol());
 		newStock.setAsk(stockDto.getAsk());
@@ -206,7 +206,9 @@ public class PortfolioManager implements PortfolioManagerInterface{
 		newStock.setDate(stockDto.getDate());
 		newStock.setStockQuantity(stockDto.getQuantity());
 		if(stockDto.getRecommendation() != null) newStock.setRecommendation(ALGO_RECOMMENDATION.valueOf(stockDto.getRecommendation()));
-
+		else
+			newStock.setRecommendation(ALGO_RECOMMENDATION.valueOf("HOLD"));
+		
 		return newStock;
 	}
 	/**
@@ -261,17 +263,16 @@ public class PortfolioManager implements PortfolioManagerInterface{
 	}
 	/**
 	 * toDto - covert Stock to Stock DTO
-	 * @param inStock
+	 * @param stocks
 	 * @return
 	 */
-	private StockDto toDto(StockInterface inStock) {
-		if (inStock == null) {
+	private StockDto toDto(StockInterface stocks) {
+		if (stocks == null) {
 			return null;
 		}
 		
-		Stock stock = (Stock) inStock;
-		return new StockDto(stock.getSymbol(), stock.getAsk(), stock.getBid(), 
-				stock.getDate(), stock.getStockQuantity(), stock.getRecommendation().name());
+		Stock stock = (Stock) stocks;
+		return new StockDto(stock.getSymbol(), stock.getAsk(), stock.getBid(), stock.getDate(), stock.getStockQuantity(), stock.getRecommendation().name());
 	}
 
 	/**
