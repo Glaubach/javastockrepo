@@ -1,11 +1,8 @@
 package com.myorg.javacourse.model;
-//import java.text.DateFormat;
-//import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import org.algo.model.StockInterface;
-
 import com.myorg.javacourse.model.Portfolio.ALGO_RECOMMENDATION;
+
 /**
  * This class hold all stock parameters and prints the stock 
  * @param symbol           stock name
@@ -16,7 +13,6 @@ import com.myorg.javacourse.model.Portfolio.ALGO_RECOMMENDATION;
  * @param stockQuantity    ammount of stock shares
  */
 public class Stock implements StockInterface{
-	
 	private String symbol;
 	private Float ask;
 	private Float bid;
@@ -24,9 +20,11 @@ public class Stock implements StockInterface{
 	private ALGO_RECOMMENDATION recommendation;
 	private int stockQuantity;
 	
-	//private transient DateFormat df = new SimpleDateFormat();
-	
+	/**
+	 * naked c'tor for stock
+	 */
 	public Stock(){}
+	
 	/**
 	 *constructor for Stock class 
 	 */
@@ -36,6 +34,7 @@ public class Stock implements StockInterface{
 		this.bid = g;
 		this.date = date;
 	}
+	
 	/**
 	 * copy constructor for stock class 
 	 */
@@ -70,6 +69,19 @@ public class Stock implements StockInterface{
 	public void setDate(Date date) {
 		this.date = date;
 	}
+	public ALGO_RECOMMENDATION getRecommendation() {
+		return recommendation;
+	}
+	public void setRecommendation(ALGO_RECOMMENDATION recommendation) {
+		this.recommendation = recommendation;
+	}
+	public int  getStockQuantity() {
+		return  stockQuantity;
+	}
+	public void setStockQuantity(int stockQuantity) {
+		this.stockQuantity = stockQuantity;
+	}
+	
 	/**
 	 * Method that returns stock's details
 	 * @return ret  string of stock details
@@ -78,17 +90,5 @@ public class Stock implements StockInterface{
 	public String getHtmlDescription() {
 		String ret = "<b> Stock Symbol: </b>"+ getSymbol() + ",<b> Ask: </b>" + getAsk()+ ",<b> Bid: </b>" + getBid()+ ",<b> Date: </b>" + getDate().getMonth() + "/" + getDate().getDate() + "/" + (1900+ getDate().getYear() +"  " +getDate().getTime())  ;
 		return ret;
-	}
-	public ALGO_RECOMMENDATION getRecommendation() {
-		return recommendation;
-	}
-	public void setRecommendation(ALGO_RECOMMENDATION recommendation) {
-		this.recommendation = recommendation;
-	}
-	public int getStockQuantity() {
-		return stockQuantity;
-	}
-	public void setStockQuantity(int stockQuantity) {
-		this.stockQuantity = stockQuantity;
 	}
 }

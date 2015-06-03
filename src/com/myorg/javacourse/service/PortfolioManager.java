@@ -24,20 +24,23 @@ import org.algo.service.PortfolioManagerInterface;
 import org.algo.service.ServiceManager;
 
 /**
- * A class to manage all portfolios and their data
+ * A class to manage the online portfolio and it's data
  */
 public class PortfolioManager implements PortfolioManagerInterface{
 	public enum OPERATION {BUY, SELL, REMOVE, HOLD }
 	
 	private DatastoreService datastoreService = ServiceManager.datastoreService();
 
+	/**
+	 * This method is used to retrieve the online portfolio
+	 */
 	public PortfolioInterface getPortfolio() {
 		PortfolioDto portfolioDto = datastoreService.getPortfolilo();
 		return fromDto(portfolioDto);
 	}
 	
 	/**
-	 * Update portfolio with stocks
+	 * Update online portfolio with stocks
 	 */
 	@Override
 	public void update() {
@@ -76,6 +79,7 @@ public class PortfolioManager implements PortfolioManagerInterface{
 		portfolio.setTitle(title);
 		flush(portfolio);
 	}
+	
 	/**
 	* update portfolio balance
 	*/
@@ -197,6 +201,11 @@ public class PortfolioManager implements PortfolioManagerInterface{
 		flush(portfolio);
 	}
 
+	/**
+	 * This method is used to convert a stock from the online portfolio to a stock object
+	 * @param   stockDto   Stock in DataStore
+	 * @return  stock	   Stock object
+	 */
 	private Stock fromDto(StockDto stockDto) {
 		Stock newStock = new Stock();
 
@@ -211,10 +220,11 @@ public class PortfolioManager implements PortfolioManagerInterface{
 		
 		return newStock;
 	}
+	
 	/**
 	 * fromDto - converts portfolioDto to Portfolio
-	 * @param dto
-	 * @return portfolio
+	 * @param  dto        DataStore portfolio
+	 * @return portfolio  Portfolio object
 	 */
 	private Portfolio fromDto(PortfolioDto dto) {
 		StockDto[] stocks = dto.getStocks();
@@ -228,7 +238,7 @@ public class PortfolioManager implements PortfolioManagerInterface{
 			}
 
 			Stock[] stockArray = stockList.toArray(new Stock[stockList.size()]);
-			ret = new Portfolio(stockArray);
+			ret = new Portfolio(stockArray,stockList.size());
 		}
 
 		ret.setTitle(dto.getTitle());
@@ -238,18 +248,20 @@ public class PortfolioManager implements PortfolioManagerInterface{
 			e.printStackTrace();
 		}
 		return ret;
-	}	
+	}
+	
 	/**
 	 * update database with new portfolio's data
-	 * @param portfolio
+	 * @param portfolio   portfolio object
 	 */
 	private void flush(Portfolio portfolio) {
 		datastoreService.updatePortfolio(toDto(portfolio));
 	}
+	
 	/**
 	 * toDtoList - convert List of Stocks to list of Stock DTO
-	 * @param stocks
-	 * @return stockDto
+	 * @param  stocks    List of stocks in portfolio object
+	 * @return stockDto  List of stocks for DataStore portfolio
 	 */
 	private List<StockDto> toDtoList(List<Stock> stocks) {
 
@@ -261,10 +273,11 @@ public class PortfolioManager implements PortfolioManagerInterface{
 
 		return ret;
 	}
+	
 	/**
-	 * toDto - covert Stock to Stock DTO
-	 * @param stocks
-	 * @return
+	 * toDto - convert Stock to Stock DTO
+	 * @param  stocks    stock object
+	 * @return StockDto  DataStore stock
 	 */
 	private StockDto toDto(StockInterface stocks) {
 		if (stocks == null) {
@@ -277,8 +290,8 @@ public class PortfolioManager implements PortfolioManagerInterface{
 
 	/**
 	 * toDto - converts Portfolio to Portfolio DTO
-	 * @param portfolio
-	 * @return
+	 * @param   portfolio      portfolio object
+	 * @return  PortfolioDto   DataStore portfolio
 	 */
 	private PortfolioDto toDto(Portfolio portfolio) {
 		StockDto[] array = null;
