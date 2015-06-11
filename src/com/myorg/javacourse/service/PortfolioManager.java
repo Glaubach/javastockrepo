@@ -87,6 +87,8 @@ public class PortfolioManager implements PortfolioManagerInterface{
 	
 	/**
 	* update portfolio balance
+	* @param amount  The amount to add/subtract to balance
+	* @throws PortfolioException
 	*/
 	@Override
 	public void updateBalance(float amount) throws PortfolioException{
@@ -95,6 +97,7 @@ public class PortfolioManager implements PortfolioManagerInterface{
 			portfolio.updateBalance(amount);
 		} catch (BalanceException e) {
 			System.out.println(e.getMessage());
+			throw e;
 		}
 		flush(portfolio);	
 	}
@@ -104,131 +107,145 @@ public class PortfolioManager implements PortfolioManagerInterface{
 	*/
 		@Override
 	public PortfolioTotalStatus[] getPortfolioTotalStatus () {
-			Portfolio portfolio = (Portfolio) getPortfolio();
-			Map<Date, Float> map = new HashMap<>();
-			//get stock status from db.
-			StockInterface[] stocks = portfolio.getStocks();
-			for (int i = 0; i < stocks.length; i++) {
-				StockInterface stock = stocks[i];
-				if(stock != null) {
-					List<StockDto> stockHistory = null;
-					try {
-						stockHistory = datastoreService.getStockHistory(stock.getSymbol(),30);
-					} catch (Exception e) {
-							return null;
+		Portfolio portfolio = (Portfolio) getPortfolio();
+		Map<Date, Float> map = new HashMap<>();
+		//get stock status from db.
+		StockInterface[] stocks = portfolio.getStocks();
+		for (int i = 0; i < stocks.length; i++) {
+			StockInterface stock = stocks[i];
+			if(stock != null) {
+				List<StockDto> stockHistory = null;
+				try {
+					stockHistory = datastoreService.getStockHistory(stock.getSymbol(),30);
+				} catch (Exception e) {
+					return null;
+				  }
+				for (StockDto stockDto : stockHistory) {
+					Stock stockStatus = fromDto(stockDto);
+					float value = stockStatus.getBid()*stockStatus.getStockQuantity();
+					Date date = stockStatus.getDate();
+					Float total = map.get(date);
+					if(total == null) {
+						total = value;
+					}else {
+						total += value;
 					}
-					for (StockDto stockDto : stockHistory) {
-						Stock stockStatus = fromDto(stockDto);
-						float value = stockStatus.getBid()*stockStatus.getStockQuantity();
-						Date date = stockStatus.getDate();
-						Float total = map.get(date);
-						if(total == null) {
-							total = value;
-						}else {
-							total += value;
-						}
-						map.put(date, value);
-					}
+					map.put(date, value);
 				}
 			}
-			PortfolioTotalStatus[] ret = new PortfolioTotalStatus[map.size()];
-			int index = 0;
-			//create dto objects
-			for (Date date : map.keySet()) {
-				ret[index] = new PortfolioTotalStatus(date, map.get(date));
-				index++;
-			}
-			//sort by date ascending.
-			Arrays.sort(ret);
-			return ret;
+		}
+		PortfolioTotalStatus[] ret = new PortfolioTotalStatus[map.size()];
+		int index = 0;
+		//create dto objects
+		for (Date date : map.keySet()) {
+			ret[index] = new PortfolioTotalStatus(date, map.get(date));
+			index++;
+		}
+		//sort by date ascending.
+		Arrays.sort(ret);
+		return ret;
 	}
 	
 	/**
 	* Add stock to portfolio 
-		 */
+	* @param symbol The name of the Stock
+	* @throws PortfolioException
+	*/
 		@Override
-	public void addStock(String symbol) {
-			Portfolio portfolio = (Portfolio) getPortfolio();
-
+	public void addStock(String symbol) throws PortfolioException{
+		Portfolio portfolio = (Portfolio) getPortfolio();
+		try {
+			StockDto stockDto = ServiceManager.marketService().getStock(symbol);
+			//get current symbol values from nasdaq.
+			Stock stock = fromDto(stockDto);
+				
+			//first thing, add it to portfolio.
 			try {
-				StockDto stockDto = ServiceManager.marketService().getStock(symbol);
-				
-				//get current symbol values from nasdaq.
-				Stock stock = fromDto(stockDto);
-				
-				//first thing, add it to portfolio.
-				try {
-					portfolio.addStock(stock);
-				} catch (StockAlreadyExistsException e) {
-					System.out.println(e.getMessage());
-				} catch (PortfolioFullException e) {
-					System.out.println(e.getMessage());
-				}   
-				//or:
-				//portfolio.addStock(stock);   
+				portfolio.addStock(stock);
+			} catch (StockAlreadyExistsException e) {
+				System.out.println(e.getMessage());
+				throw e;
+			} catch (PortfolioFullException e) {
+				System.out.println(e.getMessage());
+				throw e;
+			}   
+			//or:
+			//portfolio.addStock(stock);   
 
-				//second thing, save the new stock to the database.
-				datastoreService.saveStock(toDto(portfolio.findStock(symbol)));
+			//second thing, save the new stock to the database.
+			datastoreService.saveStock(toDto(portfolio.findStock(symbol)));
 				
-				flush(portfolio);
-			} catch (SymbolNotFoundInNasdaq e) {
-				System.out.println("Stock Not Exists: "+symbol);
-			}
+			flush(portfolio);
+		} catch (SymbolNotFoundInNasdaq e) {
+			System.out.println("Stock Not Exists: "+symbol);
 		}
+	}
 
 	/**
 	* Buy stock
-		 */
+	* @param  symbol    The name of the stock
+	* @param  quantity  Number of shares of this stock
+	* @throws PortfolioException
+    */
 		@Override
 	public void buyStock(String symbol, int quantity) throws PortfolioException{
-			try {
-				Portfolio portfolio = (Portfolio) getPortfolio();
+		try {
+			Portfolio portfolio = (Portfolio) getPortfolio();
 				
-				Stock stock = (Stock) portfolio.findStock(symbol);
-				if(stock == null) {
-					stock = fromDto(ServiceManager.marketService().getStock(symbol));				
-				}
-				
-				portfolio.buyStock(stock, quantity);
-				flush(portfolio);
-			}catch (Exception e) {
-				System.out.println("Exception: "+e);
+			Stock stock = (Stock) portfolio.findStock(symbol);
+			if(stock == null) {
+				stock = fromDto(ServiceManager.marketService().getStock(symbol));				
 			}
+				
+			portfolio.buyStock(stock, quantity);
+			flush(portfolio);
+		}catch (BalanceException e) {
+			System.out.println(e.getMessage());
+			throw e;
+		}catch (Exception e) {
+			System.out.println("Exception: "+e);
 		}
+	}
 
-/**
-	 * Sell stock
-	 */
+    /**
+    * Sell stock
+    * @param  symbol    The name of the stock
+	* @param  quantity  Number of shares of this stock
+	* @throws PortfolioException
+    */
 	@Override
 	public void sellStock(String symbol, int quantity) throws PortfolioException {
 		Portfolio portfolio = (Portfolio) getPortfolio();
 		try {
 			portfolio.sellStock(symbol, quantity);
-		} catch (BalanceException e) {
+		}catch (NotEnoughStocksException e) {
 			System.out.println(e.getMessage());
-		} catch (StockNotExistException e) {
+			throw e;
+		} 
+		catch (StockNotExistException e) {
 			System.out.println(e.getMessage());
-		} catch (NotEnoughStocksException e) {
-			System.out.println(e.getMessage());
+			throw e;
 		}
 		flush(portfolio);
 	}
 
 	/**
-	 * Remove stock
-	 */
+	* Remove stock
+	* @param  symbol    The name of the stock
+	* @throws PortfolioException
+	*/
 	@Override
-	public void removeStock(String symbol) { 
+	public void removeStock(String symbol) throws PortfolioException{ 
 		Portfolio portfolio = (Portfolio) getPortfolio();
 		try {
 			portfolio.removeStock(symbol);
-		} catch (StockNotExistException e) {
-			System.out.println(e.getMessage());
-		} catch (BalanceException e) {
-			System.out.println(e.getMessage());
 		} catch (NotEnoughStocksException e) {
 			System.out.println(e.getMessage());
-		}
+			throw e;
+		} catch (StockNotExistException e) {
+			System.out.println(e.getMessage());
+			throw e;
+		} 		
 		flush(portfolio);
 	}
 
