@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.myorg.javacourse.exception.BalanceException;
+import com.myorg.javacourse.exception.NotEnoughStocksException;
+import com.myorg.javacourse.exception.PortfolioFullException;
+import com.myorg.javacourse.exception.StockAlreadyExistsException;
+import com.myorg.javacourse.exception.StockNotExistException;
 import com.myorg.javacourse.model.Portfolio;
 import com.myorg.javacourse.model.Stock;
 import com.myorg.javacourse.model.Portfolio.ALGO_RECOMMENDATION;
@@ -84,9 +89,13 @@ public class PortfolioManager implements PortfolioManagerInterface{
 	* update portfolio balance
 	*/
 	@Override
-	public void updateBalance(float value) throws PortfolioException {
+	public void updateBalance(float amount) throws PortfolioException{
 		Portfolio portfolio = (Portfolio) getPortfolio();
-		portfolio.updateBalance(value);
+		try {
+			portfolio.updateBalance(amount);
+		} catch (BalanceException e) {
+			System.out.println(e.getMessage());
+		}
 		flush(portfolio);	
 	}
 
@@ -148,7 +157,13 @@ public class PortfolioManager implements PortfolioManagerInterface{
 				Stock stock = fromDto(stockDto);
 				
 				//first thing, add it to portfolio.
-				portfolio.addStock(stock);   
+				try {
+					portfolio.addStock(stock);
+				} catch (StockAlreadyExistsException e) {
+					System.out.println(e.getMessage());
+				} catch (PortfolioFullException e) {
+					System.out.println(e.getMessage());
+				}   
 				//or:
 				//portfolio.addStock(stock);   
 
@@ -187,7 +202,15 @@ public class PortfolioManager implements PortfolioManagerInterface{
 	@Override
 	public void sellStock(String symbol, int quantity) throws PortfolioException {
 		Portfolio portfolio = (Portfolio) getPortfolio();
-		portfolio.sellStock(symbol, quantity);
+		try {
+			portfolio.sellStock(symbol, quantity);
+		} catch (BalanceException e) {
+			System.out.println(e.getMessage());
+		} catch (StockNotExistException e) {
+			System.out.println(e.getMessage());
+		} catch (NotEnoughStocksException e) {
+			System.out.println(e.getMessage());
+		}
 		flush(portfolio);
 	}
 
@@ -197,7 +220,15 @@ public class PortfolioManager implements PortfolioManagerInterface{
 	@Override
 	public void removeStock(String symbol) { 
 		Portfolio portfolio = (Portfolio) getPortfolio();
-		portfolio.removeStock(symbol);
+		try {
+			portfolio.removeStock(symbol);
+		} catch (StockNotExistException e) {
+			System.out.println(e.getMessage());
+		} catch (BalanceException e) {
+			System.out.println(e.getMessage());
+		} catch (NotEnoughStocksException e) {
+			System.out.println(e.getMessage());
+		}
 		flush(portfolio);
 	}
 
